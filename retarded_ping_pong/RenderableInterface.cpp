@@ -17,7 +17,7 @@ GLuint RenderableInterface::CompileGLShader(const char* pchShaderName, const cha
 	glGetShaderiv(nSceneVertexShader, GL_COMPILE_STATUS, &vShaderCompiled);
 	if (vShaderCompiled != GL_TRUE)
 	{
-		dprintf("%s - Unable to compile vertex shader %d!\n", pchShaderName, nSceneVertexShader);
+		fprintf(stderr, "%s - Unable to compile vertex shader %d!\n", pchShaderName, nSceneVertexShader);
 		glDeleteProgram(unProgramID);
 		glDeleteShader(nSceneVertexShader);
 		return 0;
@@ -33,7 +33,7 @@ GLuint RenderableInterface::CompileGLShader(const char* pchShaderName, const cha
 	glGetShaderiv(nSceneFragmentShader, GL_COMPILE_STATUS, &fShaderCompiled);
 	if (fShaderCompiled != GL_TRUE)
 	{
-		dprintf("%s - Unable to compile fragment shader %d!\n", pchShaderName, nSceneFragmentShader);
+		fprintf(stderr, "%s - Unable to compile fragment shader %d!\n", pchShaderName, nSceneFragmentShader);
 		glDeleteProgram(unProgramID);
 		glDeleteShader(nSceneFragmentShader);
 		return 0;
@@ -48,7 +48,7 @@ GLuint RenderableInterface::CompileGLShader(const char* pchShaderName, const cha
 	glGetProgramiv(unProgramID, GL_LINK_STATUS, &programSuccess);
 	if (programSuccess != GL_TRUE)
 	{
-		dprintf("%s - Error linking program %d!\n", pchShaderName, unProgramID);
+		fprintf(stderr, "%s - Error linking program %d!\n", pchShaderName, unProgramID);
 		glDeleteProgram(unProgramID);
 		return 0;
 	}
@@ -64,7 +64,7 @@ GLint RenderableInterface::GetShaderParamLocation(const GLuint shaderDesc, const
 	GLint m_nSceneMatrixLocation = glGetUniformLocation(shaderDesc, paramName.c_str());
 	if (m_nSceneMatrixLocation == -1)
 	{
-		dprintf("Unable to find param uniform in shader\n");
+		fprintf(stderr, "Unable to find param uniform in shader\n");
 	}
 	return m_nSceneMatrixLocation;
 }

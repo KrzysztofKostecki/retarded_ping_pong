@@ -168,7 +168,6 @@
     <ClCompile Include="MainStage.cpp" />
     <ClCompile Include="Paddle.cpp" />
     <ClCompile Include="RenderableInterface.cpp" />
-    <ClCompile Include="RenderModel.cpp" />
     <ClCompile Include="retarded_ping_pong_main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -182,7 +181,6 @@
     <ClInclude Include="MainStage.h" />
     <ClInclude Include="Paddle.h" />
     <ClInclude Include="RenderableInterface.h" />
-    <ClInclude Include="RenderModel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

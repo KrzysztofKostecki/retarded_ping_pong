@@ -118,7 +118,7 @@ Application::Application() :
 Application::~Application()
 {
 	// work is done in Shutdown
-	dprintf("Shutdown");
+	fprintf(stderr, "Shutdown");
 }
 
 
@@ -494,7 +494,7 @@ void Application::ProcessVREvent(const vr::VREvent_t& event)
 	{
 	case vr::VREvent_TrackedDeviceDeactivated:
 	{
-		dprintf("Device %u detached.\n", event.trackedDeviceIndex);
+		fprintf(stderr, "Device %u detached.\n", event.trackedDeviceIndex);
 	}
 	break;
 	case vr::VREvent_TrackedDeviceUpdated:
@@ -559,7 +559,7 @@ void Application::RenderFrame()
 		m_vrInfo.m_iValidPoseCount_Last = m_vrInfo.m_iValidPoseCount;
 		m_vrInfo.m_iTrackedControllerCount_Last = m_vrInfo.m_iTrackedControllerCount;
 
-		dprintf("PoseCount:%d(%s) Controllers:%d\n", m_vrInfo.m_iValidPoseCount, m_vrInfo.m_strPoseClasses.c_str(), m_vrInfo.m_iTrackedControllerCount);
+		fprintf(stderr, "PoseCount:%d(%s) Controllers:%d\n", m_vrInfo.m_iValidPoseCount, m_vrInfo.m_strPoseClasses.c_str(), m_vrInfo.m_iTrackedControllerCount);
 	}
 
 	UpdateHMDMatrixPose();

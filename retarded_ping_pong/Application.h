@@ -1,7 +1,6 @@
 #pragma once
 
 #include "RenderableInterface.h"
-#include "RenderModel.h"
 #include "MainStage.h"
 
 #include <Matrices.h>

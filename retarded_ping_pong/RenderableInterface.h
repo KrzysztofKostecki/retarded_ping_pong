@@ -5,33 +5,6 @@
 #include <openvr.h>
 
 
-void ThreadSleep(unsigned long nMilliseconds)
-{
-#if defined(_WIN32)
-	::Sleep(nMilliseconds);
-#elif defined(POSIX)
-	usleep(nMilliseconds * 1000);
-#endif
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Outputs a set of optional arguments to debugging output, using
-//          the printf format setting specified in fmt*.
-//-----------------------------------------------------------------------------
-void dprintf(const char* fmt, ...)
-{
-	va_list args;
-	char buffer[2048];
-
-	va_start(args, fmt);
-	vsprintf_s(buffer, fmt, args);
-	va_end(args);
-
-	//if (g_bPrintf)
-	printf("%s", buffer);
-
-	OutputDebugStringA(buffer);
-}
 
 
 struct VertexDataScene
@@ -88,7 +61,6 @@ struct VRInfo {
 		vr::VRActionHandle_t m_actionPose = vr::k_ulInvalidActionHandle;
 		vr::VRActionHandle_t m_actionHaptic = vr::k_ulInvalidActionHandle;
 		Matrix4 m_rmat4Pose;
-		RenderModel* m_pRenderModel = nullptr;
 		std::string m_sRenderModelName;
 		bool m_bShowController;
 	};

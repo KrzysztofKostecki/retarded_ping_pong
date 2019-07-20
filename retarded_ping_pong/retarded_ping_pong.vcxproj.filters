@@ -45,9 +45,6 @@
     <ClCompile Include="RenderableInterface.cpp">
       <Filter>Source Files\Processing</Filter>
     </ClCompile>
-    <ClCompile Include="RenderModel.cpp">
-      <Filter>Source Files\Processing</Filter>
-    </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>Source Files\Logic</Filter>
     </ClCompile>
@@ -78,9 +75,6 @@
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="RenderableInterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Application.h">

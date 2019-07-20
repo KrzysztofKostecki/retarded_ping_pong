@@ -1,2 +1,5 @@
 retarded_ping_pong/Debug
 .vs/
+bin/win32/*.pdb
+bin/win32/*.ilk
+bin/win32/*.exe
