@@ -238,7 +238,9 @@ bool Application::BInit()
 		return false;
 	}
 
-	vr::VRInput()->SetActionManifestPath(Path_MakeAbsolute("../hellovr_actions.json", Path_StripFilename(Path_GetExecutablePath())).c_str());
+	vr::VRInput()->SetActionManifestPath(Path_MakeAbsolute("../pingpong_actions.json", Path_StripFilename(Path_GetExecutablePath())).c_str());
+
+	vr::VRInput()->GetActionSetHandle("/actions/rpingpong", &m_genericActionSet);
 
 	return true;
 }
