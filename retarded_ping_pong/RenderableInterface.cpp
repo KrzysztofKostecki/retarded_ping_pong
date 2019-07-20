@@ -68,3 +68,19 @@ GLint RenderableInterface::GetShaderParamLocation(const GLuint shaderDesc, const
 	}
 	return m_nSceneMatrixLocation;
 }
+
+Matrix4 VRInfo::GetCurrentViewProjectionMatrix(vr::Hmd_Eye nEye)
+{
+	Matrix4 matMVP;
+	if (nEye == vr::Eye_Left)
+	{
+		matMVP = m_mat4ProjectionLeft * m_mat4eyePosLeft * m_mat4HMDPose;
+	}
+	else if (nEye == vr::Eye_Right)
+	{
+		matMVP = m_mat4ProjectionRight * m_mat4eyePosRight * m_mat4HMDPose;
+	}
+
+	return matMVP;
+
+}

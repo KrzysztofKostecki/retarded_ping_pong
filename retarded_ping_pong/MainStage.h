@@ -9,7 +9,8 @@ public:
 	MainStage(VRInfo& vrInfo) : 
 		VRCapable{ vrInfo }, 
 		m_shaderDesc(CompileGLShader(shaderName, vertexShaderContent, fragmentShaderContent)), 
-		m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix"))  
+		m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix")),
+		m_ball(new Ball(m_vrInfo))
 	{
 	}
 
@@ -21,7 +22,7 @@ private:
 
 private:
 	GLuint m_shaderDesc;
-	GLuint m_matrixShaderLocation;
+	GLint m_matrixShaderLocation;
 
 private:
 	static constexpr const char* shaderName = "scene";
@@ -44,6 +45,6 @@ private:
 		"out vec4 outputColor;\n"
 		"void main()\n"
 		"{\n"
-		"   outputColor = texture(mytexture, v2UVcoords);\n"
+		"   outputColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
 		"}\n";
 };

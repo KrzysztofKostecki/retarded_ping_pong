@@ -42,6 +42,7 @@ struct VRInfo {
 	std::string m_strDisplay;
 	vr::TrackedDevicePose_t m_rTrackedDevicePose[vr::k_unMaxTrackedDeviceCount];
 	Matrix4 m_rmat4DevicePose[vr::k_unMaxTrackedDeviceCount];
+	Matrix4 GetCurrentViewProjectionMatrix(vr::Hmd_Eye nEye);
 
 	struct ControllerInfo_t
 	{

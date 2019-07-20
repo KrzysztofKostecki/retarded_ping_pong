@@ -101,7 +101,7 @@ Application::Application() :
 	, m_pContext(NULL)
 	, m_nCompanionWindowWidth(640)
 	, m_nCompanionWindowHeight(320)
-	, m_bDebugOpenGL(false)
+	, m_bDebugOpenGL(true)
 	, m_bVerbose(false)
 	, m_bPerf(false)
 	, m_bVblank(false)
@@ -919,26 +919,6 @@ Matrix4 Application::GetHMDMatrixPoseEye(vr::Hmd_Eye nEye)
 	);
 
 	return matrixObj.invert();
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: Gets a Current View Projection Matrix with respect to nEye,
-//          which may be an Eye_Left or an Eye_Right.
-//-----------------------------------------------------------------------------
-Matrix4 Application::GetCurrentViewProjectionMatrix(vr::Hmd_Eye nEye)
-{
-	Matrix4 matMVP;
-	if (nEye == vr::Eye_Left)
-	{
-		matMVP = m_vrInfo.m_mat4ProjectionLeft * m_vrInfo.m_mat4eyePosLeft * m_vrInfo.m_mat4HMDPose;
-	}
-	else if (nEye == vr::Eye_Right)
-	{
-		matMVP = m_vrInfo.m_mat4ProjectionRight * m_vrInfo.m_mat4eyePosRight * m_vrInfo.m_mat4HMDPose;
-	}
-
-	return matMVP;
 }
 
 
