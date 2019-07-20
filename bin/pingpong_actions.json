@@ -2,11 +2,11 @@
       "default_bindings": [
          {
             "controller_type" : "vive_controller",
-            "binding_url" : "hellovr_bindings_vive_controller.json"
+            "binding_url" : "pingpong_bindings_vive_controller.json"
          },
          {
             "controller_type" : "generic",
-            "binding_url" : "hellovr_bindings_generic.json"
+            "binding_url" : "pingpong_bindings_generic.json"
          }
       ], 
   "actions": [

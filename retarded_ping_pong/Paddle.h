@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderableInterface.h"
+
 class Paddle :
 	public VRCapable
 {
@@ -16,6 +17,7 @@ public:
 
 	// Inherited via VRCapable
 	void RenderScene(vr::Hmd_Eye nEye) override;
+	void HandleInput() override;
 
 private:
 	GLuint m_shaderDesc;
@@ -41,6 +43,5 @@ private:
 		"{\n"
 		"   outputColor = v4Color;\n"
 		"}\n";
-
 };
 

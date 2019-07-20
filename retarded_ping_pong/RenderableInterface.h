@@ -4,9 +4,6 @@
 #include <Matrices.h>
 #include <openvr.h>
 
-
-
-
 struct VertexDataScene
 {
 	Vector3 position;
@@ -95,6 +92,6 @@ protected:
 	VRInfo& m_vrInfo;
 
 public:
-
+	virtual void HandleInput() = 0;
 	VRCapable(VRInfo& vr) :  m_vrInfo{ vr }{}
 };

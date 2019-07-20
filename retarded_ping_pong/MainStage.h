@@ -16,6 +16,7 @@ public:
 
 	// Inherited via VRCapable
 	void RenderScene(vr::Hmd_Eye nEye) override;
+	void HandleInput() override;
 
 private:
 	Ball* m_ball = nullptr;

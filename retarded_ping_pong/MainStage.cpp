@@ -8,9 +8,12 @@ void MainStage::RenderScene(vr::Hmd_Eye nEye)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glUseProgram(m_shaderDesc);
-	//glUniformMatrix4fv(m_matrixShaderLocation, 1, GL_FALSE, m_vrInfo.GetCurrentViewProjectionMatrix(nEye).get());
 
 	m_ball->RenderScene(nEye);
 
 	glUseProgram(0);
+}
+
+void MainStage::HandleInput()
+{
 }

@@ -5,7 +5,6 @@ Ball::Ball(VRInfo& vrInfo) :
 	m_shaderDesc(CompileGLShader(shaderName, vertexShaderContent, fragmentShaderContent)),
 	m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix")) 
 {
-	m_position.scale(0.1f);
 
 	GLfloat vertexData[] = {
 		-1.0f,-1.0f,-1.0f, // triangle 1 : begin
@@ -68,10 +67,9 @@ Ball::~Ball() {
 
 void Ball::RenderScene(vr::Hmd_Eye nEye)
 {
-	//glUniformMatrix4fv(m_matrixShaderLocation, )
-
-	//position.translate(Vector3(-1, -1, 0));
+	m_position.identity().scale(0.1f);
 	m_position = m_vrInfo.GetCurrentViewProjectionMatrix(nEye) * m_position;
+
 	glUseProgram(m_shaderDesc);
 	glUniformMatrix4fv(m_matrixShaderLocation, 1, GL_FALSE, m_position.get());
 	glBindVertexArray(m_vao);
@@ -79,4 +77,8 @@ void Ball::RenderScene(vr::Hmd_Eye nEye)
 	glBindVertexArray(0);
 	glUseProgram(0);
 
+}
+
+void Ball::HandleInput()
+{
 }

@@ -9,11 +9,13 @@ public:
 
 	// Inherited via VRCapable
 	void RenderScene(vr::Hmd_Eye nEye) override;
+	void HandleInput() override;
 
 private:
 	GLuint m_vbo;
 	GLuint m_vao;
 	GLuint m_vertexCount;
+	Matrix4 m_position;
 
 private:
 	GLuint m_shaderDesc;
