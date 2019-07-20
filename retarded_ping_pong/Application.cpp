@@ -106,37 +106,9 @@ Application::Application() :
 	, m_bPerf(false)
 	, m_bVblank(false)
 	, m_bGlFinishHack(true)
+	, m_stage(nullptr)
 {
-
-	//for (int i = 1; i < argc; i++)
-	//{
-	//	if (!stricmp(argv[i], "-gldebug"))
-	//	{
-	//		m_bDebugOpenGL = true;
-	//	}
-	//	else if (!stricmp(argv[i], "-verbose"))
-	//	{
-	//		m_bVerbose = true;
-	//	}
-	//	else if (!stricmp(argv[i], "-novblank"))
-	//	{
-	//		m_bVblank = false;
-	//	}
-	//	else if (!stricmp(argv[i], "-noglfinishhack"))
-	//	{
-	//		m_bGlFinishHack = false;
-	//	}
-	//	else if (!stricmp(argv[i], "-noprintf"))
-	//	{
-	//		g_bPrintf = false;
-	//	}
-	//	else if (!stricmp(argv[i], "-cubevolume") && (argc > i + 1) && (*argv[i + 1] != '-'))
-	//	{
-	//		m_iSceneVolumeInit = atoi(argv[i + 1]);
-	//		i++;
-	//	}
-	//}
-	// other initialization tasks are done in BInit
+	
 	memset(m_vrInfo.m_rDevClassChar, 0, sizeof(m_vrInfo.m_rDevClassChar));
 };
 
@@ -301,7 +273,6 @@ bool Application::BInitGL()
 	if (!CreateAllShaders())
 		return false;
 
-	SetupTexturemaps();
 	SetupScene();
 	SetupCameras();
 	SetupStereoRenderTargets();
@@ -340,6 +311,10 @@ void Application::Shutdown()
 		m_vrInfo.m_pHMD = NULL;
 	}
 
+	if (m_stage != nullptr) {
+		delete m_stage;
+	}
+
 	if (m_pContext)
 	{
 		if (m_bDebugOpenGL)
@@ -352,14 +327,6 @@ void Application::Shutdown()
 		{
 			glDeleteProgram(m_unSceneProgramID);
 		}*/
-		if (m_vrInfo.m_unControllerTransformProgramID)
-		{
-			glDeleteProgram(m_unControllerTransformProgramID);
-		}
-		if ( m_vrInfo.m_unRenderModelProgramID)
-		{
-			glDeleteProgram(m_unRenderModelProgramID);
-		}
 		if (m_unCompanionWindowProgramID)
 		{
 			glDeleteProgram(m_unCompanionWindowProgramID);
@@ -380,11 +347,6 @@ void Application::Shutdown()
 		if (m_unCompanionWindowVAO != 0)
 		{
 			glDeleteVertexArrays(1, &m_unCompanionWindowVAO);
-		}
-		
-		if (m_unControllerVAO != 0)
-		{
-			glDeleteVertexArrays(1, &m_unControllerVAO);
 		}
 	}
 
@@ -417,10 +379,6 @@ bool Application::HandleInput()
 				|| sdlEvent.key.keysym.sym == SDLK_q)
 			{
 				bRet = true;
-			}
-			if (sdlEvent.key.keysym.sym == SDLK_c)
-			{
-				m_bShowCubes = !m_bShowCubes;
 			}
 		}
 	}
@@ -614,42 +572,41 @@ void Application::RenderFrame()
 bool Application::CreateAllShaders()
 {
 
+	//m_unRenderModelProgramID = CompileGLShader(
+	//	"render model",
 
-	m_unRenderModelProgramID = CompileGLShader(
-		"render model",
+	//	// vertex shader
+	//	"#version 410\n"
+	//	"uniform mat4 matrix;\n"
+	//	"layout(location = 0) in vec4 position;\n"
+	//	"layout(location = 1) in vec3 v3NormalIn;\n"
+	//	"layout(location = 2) in vec2 v2TexCoordsIn;\n"
+	//	"out vec2 v2TexCoord;\n"
+	//	"void main()\n"
+	//	"{\n"
+	//	"	v2TexCoord = v2TexCoordsIn;\n"
+	//	"	gl_Position = matrix * vec4(position.xyz, 1);\n"
+	//	"}\n",
 
-		// vertex shader
-		"#version 410\n"
-		"uniform mat4 matrix;\n"
-		"layout(location = 0) in vec4 position;\n"
-		"layout(location = 1) in vec3 v3NormalIn;\n"
-		"layout(location = 2) in vec2 v2TexCoordsIn;\n"
-		"out vec2 v2TexCoord;\n"
-		"void main()\n"
-		"{\n"
-		"	v2TexCoord = v2TexCoordsIn;\n"
-		"	gl_Position = matrix * vec4(position.xyz, 1);\n"
-		"}\n",
+	//	//fragment shader
+	//	"#version 410 core\n"
+	//	"uniform sampler2D diffuse;\n"
+	//	"in vec2 v2TexCoord;\n"
+	//	"out vec4 outputColor;\n"
+	//	"void main()\n"
+	//	"{\n"
+	//	"   outputColor = texture( diffuse, v2TexCoord);\n"
+	//	"}\n"
 
-		//fragment shader
-		"#version 410 core\n"
-		"uniform sampler2D diffuse;\n"
-		"in vec2 v2TexCoord;\n"
-		"out vec4 outputColor;\n"
-		"void main()\n"
-		"{\n"
-		"   outputColor = texture( diffuse, v2TexCoord);\n"
-		"}\n"
+	//);
+	//m_nRenderModelMatrixLocation = glGetUniformLocation(m_unRenderModelProgramID, "matrix");
+	//if (m_nRenderModelMatrixLocation == -1)
+	//{
+	//	dprintf("Unable to find matrix uniform in render model shader\n");
+	//	return false;
+	//}
 
-	);
-	m_nRenderModelMatrixLocation = glGetUniformLocation(m_unRenderModelProgramID, "matrix");
-	if (m_nRenderModelMatrixLocation == -1)
-	{
-		dprintf("Unable to find matrix uniform in render model shader\n");
-		return false;
-	}
-
-	m_unCompanionWindowProgramID = CompileGLShader(
+	m_unCompanionWindowProgramID = RenderableInterface::CompileGLShader(
 		"CompanionWindow",
 
 		// vertex shader
@@ -674,50 +631,8 @@ bool Application::CreateAllShaders()
 		"}\n"
 	);
 
-	return m_unSceneProgramID != 0
-		&& m_unControllerTransformProgramID != 0
-		&& m_unRenderModelProgramID != 0
-		&& m_unCompanionWindowProgramID != 0;
+	return m_unCompanionWindowProgramID != 0;
 }
-
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-bool Application::SetupTexturemaps()
-{
-	std::string sExecutableDirectory = Path_StripFilename(Path_GetExecutablePath());
-	std::string strFullPath = Path_MakeAbsolute("../cube_texture.png", sExecutableDirectory);
-
-	std::vector<unsigned char> imageRGBA;
-	unsigned nImageWidth, nImageHeight;
-	unsigned nError = lodepng::decode(imageRGBA, nImageWidth, nImageHeight, strFullPath.c_str());
-
-	if (nError != 0)
-		return false;
-
-	glGenTextures(1, &m_iTexture);
-	glBindTexture(GL_TEXTURE_2D, m_iTexture);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nImageWidth, nImageHeight,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, imageRGBA.data());
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-	GLfloat fLargest;
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	return (m_iTexture != 0);
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: create a sea of cubes
@@ -727,54 +642,10 @@ void Application::SetupScene()
 	if (!m_vrInfo.m_pHMD)
 		return;
 
-	std::vector<float> vertdataarray;
-
-	Matrix4 matScale;
-	matScale.scale(m_fScale, m_fScale, m_fScale);
-	Matrix4 matTransform;
-	matTransform.translate(
-		-((float)m_iSceneVolumeWidth * m_fScaleSpacing) / 2.f,
-		-((float)m_iSceneVolumeHeight * m_fScaleSpacing) / 2.f,
-		-((float)m_iSceneVolumeDepth * m_fScaleSpacing) / 2.f);
-
-	Matrix4 mat = matScale * matTransform;
-
-	for (int z = 0; z < m_iSceneVolumeDepth; z++)
-	{
-		for (int y = 0; y < m_iSceneVolumeHeight; y++)
-		{
-			for (int x = 0; x < m_iSceneVolumeWidth; x++)
-			{
-				AddCubeToScene(mat, vertdataarray);
-				mat = mat * Matrix4().translate(m_fScaleSpacing, 0, 0);
-			}
-			mat = mat * Matrix4().translate(-((float)m_iSceneVolumeWidth) * m_fScaleSpacing, m_fScaleSpacing, 0);
-		}
-		mat = mat * Matrix4().translate(0, -((float)m_iSceneVolumeHeight) * m_fScaleSpacing, m_fScaleSpacing);
+	if (m_stage != nullptr) {
+		delete m_stage;
 	}
-	m_uiVertcount = vertdataarray.size() / 5;
-
-	glGenVertexArrays(1, &m_unSceneVAO);
-	glBindVertexArray(m_unSceneVAO);
-
-	glGenBuffers(1, &m_glSceneVertBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, m_glSceneVertBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertdataarray.size(), &vertdataarray[0], GL_STATIC_DRAW);
-
-	GLsizei stride = sizeof(VertexDataScene);
-	uintptr_t offset = 0;
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (const void*)offset);
-
-	offset += sizeof(Vector3);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (const void*)offset);
-
-	glBindVertexArray(0);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-
+	m_stage = new MainStage(m_renderInfo, m_vrInfo);
 }
 
 
@@ -912,15 +783,15 @@ void Application::RenderStereoTargets()
 	// Left Eye
 	glBindFramebuffer(GL_FRAMEBUFFER, m_vrInfo.leftEyeDesc.m_nRenderFramebufferId);
 	glViewport(0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight);
-	RenderScene(vr::Eye_Left);
+	m_stage->RenderScene(vr::Eye_Left);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glDisable(GL_MULTISAMPLE);
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, leftEyeDesc.m_nRenderFramebufferId);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, leftEyeDesc.m_nResolveFramebufferId);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_vrInfo.leftEyeDesc.m_nRenderFramebufferId);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_vrInfo.leftEyeDesc.m_nResolveFramebufferId);
 
-	glBlitFramebuffer(0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight,
+	glBlitFramebuffer(0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight, 0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight,
 		GL_COLOR_BUFFER_BIT,
 		GL_LINEAR);
 
@@ -930,17 +801,17 @@ void Application::RenderStereoTargets()
 	glEnable(GL_MULTISAMPLE);
 
 	// Right Eye
-	glBindFramebuffer(GL_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId);
-	glViewport(0, 0, m_nRenderWidth, m_nRenderHeight);
-	RenderScene(vr::Eye_Right);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_vrInfo.rightEyeDesc.m_nRenderFramebufferId);
+	glViewport(0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight);
+	m_stage->RenderScene(vr::Eye_Right);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glDisable(GL_MULTISAMPLE);
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, rightEyeDesc.m_nResolveFramebufferId);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_vrInfo.rightEyeDesc.m_nRenderFramebufferId);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_vrInfo.rightEyeDesc.m_nResolveFramebufferId);
 
-	glBlitFramebuffer(0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight,
+	glBlitFramebuffer(0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight, 0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight,
 		GL_COLOR_BUFFER_BIT,
 		GL_LINEAR);
 
@@ -948,54 +819,54 @@ void Application::RenderStereoTargets()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
-
-//-----------------------------------------------------------------------------
-// Purpose: Renders a scene with respect to nEye.
-//-----------------------------------------------------------------------------
-void Application::RenderScene(vr::Hmd_Eye nEye)
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-
-	if (m_bShowCubes)
-	{
-		glUseProgram(m_unSceneProgramID);
-		glUniformMatrix4fv(m_nSceneMatrixLocation, 1, GL_FALSE, GetCurrentViewProjectionMatrix(nEye).get());
-		glBindVertexArray(m_unSceneVAO);
-		glBindTexture(GL_TEXTURE_2D, m_iTexture);
-		glDrawArrays(GL_TRIANGLES, 0, m_uiVertcount);
-		glBindVertexArray(0);
-	}
-
-	bool bIsInputAvailable = m_pHMD->IsInputAvailable();
-
-	if (bIsInputAvailable)
-	{
-		// draw the controller axis lines
-		glUseProgram(m_unControllerTransformProgramID);
-		glUniformMatrix4fv(m_nControllerMatrixLocation, 1, GL_FALSE, GetCurrentViewProjectionMatrix(nEye).get());
-		glBindVertexArray(m_unControllerVAO);
-		glDrawArrays(GL_LINES, 0, m_uiControllerVertcount);
-		glBindVertexArray(0);
-	}
-
-	// ----- Render Model rendering -----
-	glUseProgram(m_unRenderModelProgramID);
-
-	for (EHand eHand = Left; eHand <= Right; ((int&)eHand)++)
-	{
-		if (!m_rHand[eHand].m_bShowController || !m_rHand[eHand].m_pRenderModel)
-			continue;
-
-		const Matrix4& matDeviceToTracking = m_rHand[eHand].m_rmat4Pose;
-		Matrix4 matMVP = GetCurrentViewProjectionMatrix(nEye) * matDeviceToTracking;
-		glUniformMatrix4fv(m_nRenderModelMatrixLocation, 1, GL_FALSE, matMVP.get());
-
-		m_rHand[eHand].m_pRenderModel->Draw();
-	}
-
-	glUseProgram(0);
-}
+//
+////-----------------------------------------------------------------------------
+//// Purpose: Renders a scene with respect to nEye.
+////-----------------------------------------------------------------------------
+//void Application::RenderScene(vr::Hmd_Eye nEye)
+//{
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//	glEnable(GL_DEPTH_TEST);
+//
+//	if (m_bShowCubes)
+//	{
+//		glUseProgram(m_unSceneProgramID);
+//		glUniformMatrix4fv(m_nSceneMatrixLocation, 1, GL_FALSE, GetCurrentViewProjectionMatrix(nEye).get());
+//		glBindVertexArray(m_unSceneVAO);
+//		glBindTexture(GL_TEXTURE_2D, m_iTexture);
+//		glDrawArrays(GL_TRIANGLES, 0, m_uiVertcount);
+//		glBindVertexArray(0);
+//	}
+//
+//	bool bIsInputAvailable = m_pHMD->IsInputAvailable();
+//
+//	if (bIsInputAvailable)
+//	{
+//		// draw the controller axis lines
+//		glUseProgram(m_unControllerTransformProgramID);
+//		glUniformMatrix4fv(m_nControllerMatrixLocation, 1, GL_FALSE, GetCurrentViewProjectionMatrix(nEye).get());
+//		glBindVertexArray(m_unControllerVAO);
+//		glDrawArrays(GL_LINES, 0, m_uiControllerVertcount);
+//		glBindVertexArray(0);
+//	}
+//
+//	// ----- Render Model rendering -----
+//	glUseProgram(m_unRenderModelProgramID);
+//
+//	for (EHand eHand = Left; eHand <= Right; ((int&)eHand)++)
+//	{
+//		if (!m_rHand[eHand].m_bShowController || !m_rHand[eHand].m_pRenderModel)
+//			continue;
+//
+//		const Matrix4& matDeviceToTracking = m_rHand[eHand].m_rmat4Pose;
+//		Matrix4 matMVP = GetCurrentViewProjectionMatrix(nEye) * matDeviceToTracking;
+//		glUniformMatrix4fv(m_nRenderModelMatrixLocation, 1, GL_FALSE, matMVP.get());
+//
+//		m_rHand[eHand].m_pRenderModel->Draw();
+//	}
+//
+//	glUseProgram(0);
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -1128,76 +999,6 @@ void Application::UpdateHMDMatrixPose()
 		m_vrInfo.m_mat4HMDPose = m_vrInfo.m_rmat4DevicePose[vr::k_unTrackedDeviceIndex_Hmd];
 		m_vrInfo.m_mat4HMDPose.invert();
 	}
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: Finds a render model we've already loaded or loads a new one
-//-----------------------------------------------------------------------------
-RenderModel* Application::FindOrLoadRenderModel(const char* pchRenderModelName)
-{
-	RenderModel* pRenderModel = NULL;
-	for (std::vector< RenderModel* >::iterator i = m_vecRenderModels.begin(); i != m_vecRenderModels.end(); i++)
-	{
-		if (!stricmp((*i)->GetName().c_str(), pchRenderModelName))
-		{
-			pRenderModel = *i;
-			break;
-		}
-	}
-
-	// load the model if we didn't find one
-	if (!pRenderModel)
-	{
-		vr::RenderModel_t* pModel;
-		vr::EVRRenderModelError error;
-		while (1)
-		{
-			error = vr::VRRenderModels()->LoadRenderModel_Async(pchRenderModelName, &pModel);
-			if (error != vr::VRRenderModelError_Loading)
-				break;
-
-			ThreadSleep(1);
-		}
-
-		if (error != vr::VRRenderModelError_None)
-		{
-			dprintf("Unable to load render model %s - %s\n", pchRenderModelName, vr::VRRenderModels()->GetRenderModelErrorNameFromEnum(error));
-			return NULL; // move on to the next tracked device
-		}
-
-		vr::RenderModel_TextureMap_t* pTexture;
-		while (1)
-		{
-			error = vr::VRRenderModels()->LoadTexture_Async(pModel->diffuseTextureId, &pTexture);
-			if (error != vr::VRRenderModelError_Loading)
-				break;
-
-			ThreadSleep(1);
-		}
-
-		if (error != vr::VRRenderModelError_None)
-		{
-			dprintf("Unable to load render texture id:%d for render model %s\n", pModel->diffuseTextureId, pchRenderModelName);
-			vr::VRRenderModels()->FreeRenderModel(pModel);
-			return NULL; // move on to the next tracked device
-		}
-
-		pRenderModel = new RenderModel(pchRenderModelName);
-		if (!pRenderModel->BInit(*pModel, *pTexture))
-		{
-			dprintf("Unable to create GL model from render model %s\n", pchRenderModelName);
-			delete pRenderModel;
-			pRenderModel = NULL;
-		}
-		else
-		{
-			m_vecRenderModels.push_back(pRenderModel);
-		}
-		vr::VRRenderModels()->FreeRenderModel(pModel);
-		vr::VRRenderModels()->FreeTexture(pTexture);
-	}
-	return pRenderModel;
 }
 
 

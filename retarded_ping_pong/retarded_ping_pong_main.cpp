@@ -9,17 +9,16 @@ int main(int argc, char *argv[])
 {
 	VRInfo vrInfo;
 	RenderInfo renderInfo;
-	Application mainStage;
+	Application app;
 
-	if (!mainStage.BInit())
+	if (!app.BInit())
 	{
-		mainStage.Shutdown();
+		app.Shutdown();
 		return 1;
 	}
 
-	mainStage.RunMainLoop();
-
-	mainStage.Shutdown();
+	app.RunMainLoop();
+	app.Shutdown();
 
 	return 0;
 }

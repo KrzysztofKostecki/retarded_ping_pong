@@ -7,6 +7,8 @@
 #include <Matrices.h>
 #include <vector>
 
+#include "MainStage.h"
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
@@ -27,8 +29,6 @@ public:
 	void ProcessVREvent(const vr::VREvent_t& event);
 	void RenderFrame();
 
-	bool SetupTexturemaps();
-
 	void SetupScene();
 
 	bool SetupStereoRenderTargets();
@@ -47,8 +47,6 @@ public:
 
 	bool CreateAllShaders();
 
-	RenderModel* FindOrLoadRenderModel(const char* pchRenderModelName);
-
 private:
 	bool m_bDebugOpenGL;
 	bool m_bVerbose;
@@ -58,6 +56,8 @@ private:
 
 	RenderInfo m_renderInfo;
 	VRInfo m_vrInfo;
+
+	MainStage* m_stage;
 
 private: // SDL bookkeeping
 	SDL_Window* m_pCompanionWindow;

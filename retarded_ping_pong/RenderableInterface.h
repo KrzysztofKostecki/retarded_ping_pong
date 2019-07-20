@@ -27,8 +27,8 @@ void dprintf(const char* fmt, ...)
 	vsprintf_s(buffer, fmt, args);
 	va_end(args);
 
-	if (g_bPrintf)
-		printf("%s", buffer);
+	//if (g_bPrintf)
+	printf("%s", buffer);
 
 	OutputDebugStringA(buffer);
 }

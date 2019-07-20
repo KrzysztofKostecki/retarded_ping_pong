@@ -1,24 +1,13 @@
 #include "MainStage.h"
 
-bool MainStage::CreateAllShaders()
-{
-	
-	
-	return false;
-}
-
-GLuint MainStage::getSceneShader()
-{
-	GLuint m_unSceneProgramID = CompileGLShader(
-		"Scene",
-
-		// Vertex Shader
-		
-	);
-	return m_unSceneProgramID;
-}
 
 
 void MainStage::RenderScene(vr::Hmd_Eye nEye)
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
+	// TODO: render stuff in scene
+
+	glUseProgram(0);
 }
