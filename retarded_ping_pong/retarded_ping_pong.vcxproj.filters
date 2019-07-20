@@ -19,6 +19,12 @@
     <Filter Include="Shared">
       <UniqueIdentifier>{8cca1fa3-575c-4e0f-acae-7d4d800be358}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Logic">
+      <UniqueIdentifier>{3d1de378-f09c-4a69-8946-4886b78d6182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Processing">
+      <UniqueIdentifier>{c1b0fc83-4d5c-4609-8670-542f0ccc0f59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="retarded_ping_pong_main.cpp">
@@ -36,6 +42,15 @@
     <ClCompile Include="..\shared\strtools.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
+    <ClCompile Include="RenderableInterface.cpp">
+      <Filter>Source Files\Processing</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderModel.cpp">
+      <Filter>Source Files\Processing</Filter>
+    </ClCompile>
+    <ClCompile Include="MainStage.cpp">
+      <Filter>Source Files\Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\lodepng.h">
@@ -52,6 +67,15 @@
     </ClInclude>
     <ClInclude Include="..\shared\strtools.h">
       <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderableInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderModel.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
