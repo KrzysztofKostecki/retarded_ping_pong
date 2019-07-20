@@ -251,7 +251,7 @@ bool Application::BInit()
 //-----------------------------------------------------------------------------
 void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
 {
-	dprintf("GL Error: %s\n", message);
+	fprintf(stderr, "GL Error: %s\n", message);
 }
 
 
@@ -431,7 +431,6 @@ bool Application::HandleInput()
 				std::string sRenderModelName = GetTrackedDeviceString(originInfo.trackedDeviceIndex, vr::Prop_RenderModelName_String);
 				if (sRenderModelName != m_vrInfo.m_rHand[eHand].m_sRenderModelName)
 				{
-					m_vrInfo.m_rHand[eHand].m_pRenderModel = FindOrLoadRenderModel(sRenderModelName.c_str());
 					m_vrInfo.m_rHand[eHand].m_sRenderModelName = sRenderModelName;
 				}
 			}
@@ -476,7 +475,7 @@ void Application::ProcessVREvent(const vr::VREvent_t& event)
 	break;
 	case vr::VREvent_TrackedDeviceUpdated:
 	{
-		dprintf("Device %u updated.\n", event.trackedDeviceIndex);
+		fprintf(stderr, "Device %u updated.\n", event.trackedDeviceIndex);
 	}
 	break;
 	}
