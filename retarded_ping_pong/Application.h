@@ -76,6 +76,6 @@ private: // OpenGL bookkeeping
 	GLuint m_glCompanionWindowIDVertBuffer;
 	GLuint m_glCompanionWindowIDIndexBuffer;
 	unsigned int m_uiCompanionWindowIndexSize;
-
+	vr::VRActionSetHandle_t m_genericActionSet;
 	bool CreateFrameBuffer(int nWidth, int nHeight, FramebufferDesc& framebufferDesc);
 };

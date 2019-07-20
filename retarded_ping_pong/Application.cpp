@@ -385,7 +385,7 @@ bool Application::HandleInput()
 
 	// Process SteamVR events
 	vr::VREvent_t event;
-	while (m_pHMD->PollNextEvent(&event, sizeof(event)))
+	while (m_vrInfo.m_pHMD->PollNextEvent(&event, sizeof(event)))
 	{
 		ProcessVREvent(event);
 	}
@@ -394,68 +394,45 @@ bool Application::HandleInput()
 	// UpdateActionState is called each frame to update the state of the actions themselves. The application
 	// controls which action sets are active with the provided array of VRActiveActionSet_t structs.
 	vr::VRActiveActionSet_t actionSet = { 0 };
-	actionSet.ulActionSet = m_actionsetDemo;
+	actionSet.ulActionSet = m_genericActionSet;
 	vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
 
-	m_bShowCubes = !GetDigitalActionState(m_actionHideCubes);
 
-	vr::VRInputValueHandle_t ulHapticDevice;
-	if (GetDigitalActionRisingEdge(m_actionTriggerHaptic, &ulHapticDevice))
-	{
-		if (ulHapticDevice == m_rHand[Left].m_source)
-		{
-			vr::VRInput()->TriggerHapticVibrationAction(m_rHand[Left].m_actionHaptic, 0, 1, 4.f, 1.0f, vr::k_ulInvalidInputValueHandle);
-		}
-		if (ulHapticDevice == m_rHand[Right].m_source)
-		{
-			vr::VRInput()->TriggerHapticVibrationAction(m_rHand[Right].m_actionHaptic, 0, 1, 4.f, 1.0f, vr::k_ulInvalidInputValueHandle);
-		}
-	}
+	// Example triggering haptic vibration
+	//vr::VRInputValueHandle_t ulHapticDevice;
+	//if (ulHapticDevice == m_vrInfo.m_rHand[VRInfo::Left].m_source)
+	//{
+	//	vr::VRInput()->TriggerHapticVibrationAction(m_vrInfo.m_rHand[VRInfo::Left].m_actionHaptic, 0, 1, 4.f, 1.0f, vr::k_ulInvalidInputValueHandle);
+	//}
+	//if (ulHapticDevice == m_vrInfo.m_rHand[VRInfo::Right].m_source)
+	//{
+	//	vr::VRInput()->TriggerHapticVibrationAction(m_vrInfo.m_rHand[VRInfo::Right].m_actionHaptic, 0, 1, 4.f, 1.0f, vr::k_ulInvalidInputValueHandle);
+	//}
 
-	vr::InputAnalogActionData_t analogData;
-	if (vr::VRInput()->GetAnalogActionData(m_actionAnalongInput, &analogData, sizeof(analogData), vr::k_ulInvalidInputValueHandle) == vr::VRInputError_None && analogData.bActive)
-	{
-		m_vAnalogValue[0] = analogData.x;
-		m_vAnalogValue[1] = analogData.y;
-	}
+	m_vrInfo.m_rHand[VRInfo::Left].m_bShowController = true;
+	m_vrInfo.m_rHand[VRInfo::Right].m_bShowController = true;
 
-	m_rHand[Left].m_bShowController = true;
-	m_rHand[Right].m_bShowController = true;
-
-	vr::VRInputValueHandle_t ulHideDevice;
-	if (GetDigitalActionState(m_actionHideThisController, &ulHideDevice))
-	{
-		if (ulHideDevice == m_rHand[Left].m_source)
-		{
-			m_rHand[Left].m_bShowController = false;
-		}
-		if (ulHideDevice == m_rHand[Right].m_source)
-		{
-			m_rHand[Right].m_bShowController = false;
-		}
-	}
-
-	for (EHand eHand = Left; eHand <= Right; ((int&)eHand)++)
+	for (auto eHand = VRInfo::Left; eHand <= VRInfo::Right; ((int&)eHand)++)
 	{
 		vr::InputPoseActionData_t poseData;
-		if (vr::VRInput()->GetPoseActionDataForNextFrame(m_rHand[eHand].m_actionPose, vr::TrackingUniverseStanding, &poseData, sizeof(poseData), vr::k_ulInvalidInputValueHandle) != vr::VRInputError_None
+		if (vr::VRInput()->GetPoseActionDataForNextFrame(m_vrInfo.m_rHand[eHand].m_actionPose, vr::TrackingUniverseStanding, &poseData, sizeof(poseData), vr::k_ulInvalidInputValueHandle) != vr::VRInputError_None
 			|| !poseData.bActive || !poseData.pose.bPoseIsValid)
 		{
-			m_rHand[eHand].m_bShowController = false;
+			m_vrInfo.m_rHand[eHand].m_bShowController = false;
 		}
 		else
 		{
-			m_rHand[eHand].m_rmat4Pose = ConvertSteamVRMatrixToMatrix4(poseData.pose.mDeviceToAbsoluteTracking);
+			m_vrInfo.m_rHand[eHand].m_rmat4Pose = ConvertSteamVRMatrixToMatrix4(poseData.pose.mDeviceToAbsoluteTracking);
 
 			vr::InputOriginInfo_t originInfo;
 			if (vr::VRInput()->GetOriginTrackedDeviceInfo(poseData.activeOrigin, &originInfo, sizeof(originInfo)) == vr::VRInputError_None
 				&& originInfo.trackedDeviceIndex != vr::k_unTrackedDeviceIndexInvalid)
 			{
 				std::string sRenderModelName = GetTrackedDeviceString(originInfo.trackedDeviceIndex, vr::Prop_RenderModelName_String);
-				if (sRenderModelName != m_rHand[eHand].m_sRenderModelName)
+				if (sRenderModelName != m_vrInfo.m_rHand[eHand].m_sRenderModelName)
 				{
-					m_rHand[eHand].m_pRenderModel = FindOrLoadRenderModel(sRenderModelName.c_str());
-					m_rHand[eHand].m_sRenderModelName = sRenderModelName;
+					m_vrInfo.m_rHand[eHand].m_pRenderModel = FindOrLoadRenderModel(sRenderModelName.c_str());
+					m_vrInfo.m_rHand[eHand].m_sRenderModelName = sRenderModelName;
 				}
 			}
 		}
