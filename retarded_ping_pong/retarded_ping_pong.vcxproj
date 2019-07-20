@@ -163,7 +163,10 @@
     <ClCompile Include="..\shared\Matrices.cpp" />
     <ClCompile Include="..\shared\pathtools.cpp" />
     <ClCompile Include="..\shared\strtools.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Ball.cpp" />
     <ClCompile Include="MainStage.cpp" />
+    <ClCompile Include="Paddle.cpp" />
     <ClCompile Include="RenderableInterface.cpp" />
     <ClCompile Include="RenderModel.cpp" />
     <ClCompile Include="retarded_ping_pong_main.cpp" />
@@ -174,7 +177,10 @@
     <ClInclude Include="..\shared\pathtools.h" />
     <ClInclude Include="..\shared\strtools.h" />
     <ClInclude Include="..\shared\Vectors.h" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="Ball.h" />
     <ClInclude Include="MainStage.h" />
+    <ClInclude Include="Paddle.h" />
     <ClInclude Include="RenderableInterface.h" />
     <ClInclude Include="RenderModel.h" />
   </ItemGroup>

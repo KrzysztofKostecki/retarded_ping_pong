@@ -48,8 +48,17 @@
     <ClCompile Include="RenderModel.cpp">
       <Filter>Source Files\Processing</Filter>
     </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files\Logic</Filter>
+    </ClCompile>
     <ClCompile Include="MainStage.cpp">
       <Filter>Source Files\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Paddle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ball.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -71,10 +80,19 @@
     <ClInclude Include="RenderableInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="MainStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderModel.h">
+    <ClInclude Include="Paddle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ball.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

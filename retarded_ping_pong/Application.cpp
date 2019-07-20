@@ -724,7 +724,7 @@ bool Application::SetupTexturemaps()
 //-----------------------------------------------------------------------------
 void Application::SetupScene()
 {
-	if (!m_pHMD)
+	if (!m_vrInfo.m_pHMD)
 		return;
 
 	std::vector<float> vertdataarray;
@@ -784,10 +784,10 @@ void Application::SetupScene()
 //-----------------------------------------------------------------------------
 void Application::SetupCameras()
 {
-	m_mat4ProjectionLeft = GetHMDMatrixProjectionEye(vr::Eye_Left);
-	m_mat4ProjectionRight = GetHMDMatrixProjectionEye(vr::Eye_Right);
-	m_mat4eyePosLeft = GetHMDMatrixPoseEye(vr::Eye_Left);
-	m_mat4eyePosRight = GetHMDMatrixPoseEye(vr::Eye_Right);
+	m_vrInfo.m_mat4ProjectionLeft = GetHMDMatrixProjectionEye(vr::Eye_Left);
+	m_vrInfo.m_mat4ProjectionRight = GetHMDMatrixProjectionEye(vr::Eye_Right);
+	m_vrInfo.m_mat4eyePosLeft = GetHMDMatrixPoseEye(vr::Eye_Left);
+	m_vrInfo.m_mat4eyePosRight = GetHMDMatrixPoseEye(vr::Eye_Right);
 }
 
 
@@ -840,10 +840,10 @@ bool Application::SetupStereoRenderTargets()
 	if (!m_vrInfo.m_pHMD)
 		return false;
 
-	m_pHMD->GetRecommendedRenderTargetSize(&m_renderInfo.m_nRenderWidth, &m_renderInfo.m_nRenderHeight);
+	m_vrInfo.m_pHMD->GetRecommendedRenderTargetSize(&m_renderInfo.m_nRenderWidth, &m_renderInfo.m_nRenderHeight);
 
-	CreateFrameBuffer(m_nRenderWidth, m_nRenderHeight, leftEyeDesc);
-	CreateFrameBuffer(m_nRenderWidth, m_nRenderHeight, rightEyeDesc);
+	CreateFrameBuffer(m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight, m_vrInfo.leftEyeDesc);
+	CreateFrameBuffer(m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight, m_vrInfo.rightEyeDesc);
 
 	return true;
 }
@@ -854,7 +854,7 @@ bool Application::SetupStereoRenderTargets()
 //-----------------------------------------------------------------------------
 void Application::SetupCompanionWindow()
 {
-	if (!m_pHMD)
+	if (!m_vrInfo.m_pHMD)
 		return;
 
 	std::vector<VertexDataWindow> vVerts;
@@ -910,8 +910,8 @@ void Application::RenderStereoTargets()
 	glEnable(GL_MULTISAMPLE);
 
 	// Left Eye
-	glBindFramebuffer(GL_FRAMEBUFFER, leftEyeDesc.m_nRenderFramebufferId);
-	glViewport(0, 0, m_nRenderWidth, m_nRenderHeight);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_vrInfo.leftEyeDesc.m_nRenderFramebufferId);
+	glViewport(0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight);
 	RenderScene(vr::Eye_Left);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -1010,7 +1010,7 @@ void Application::RenderCompanionWindow()
 	glUseProgram(m_unCompanionWindowProgramID);
 
 	// render left eye (first half of index array )
-	glBindTexture(GL_TEXTURE_2D, leftEyeDesc.m_nResolveTextureId);
+	glBindTexture(GL_TEXTURE_2D, m_vrInfo.leftEyeDesc.m_nResolveTextureId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1018,7 +1018,7 @@ void Application::RenderCompanionWindow()
 	glDrawElements(GL_TRIANGLES, m_uiCompanionWindowIndexSize / 2, GL_UNSIGNED_SHORT, 0);
 
 	// render right eye (second half of index array )
-	glBindTexture(GL_TEXTURE_2D, rightEyeDesc.m_nResolveTextureId);
+	glBindTexture(GL_TEXTURE_2D, m_vrInfo.rightEyeDesc.m_nResolveTextureId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1035,10 +1035,10 @@ void Application::RenderCompanionWindow()
 //-----------------------------------------------------------------------------
 Matrix4 Application::GetHMDMatrixProjectionEye(vr::Hmd_Eye nEye)
 {
-	if (!m_pHMD)
+	if (!m_vrInfo.m_pHMD)
 		return Matrix4();
 
-	vr::HmdMatrix44_t mat = m_pHMD->GetProjectionMatrix(nEye, m_fNearClip, m_fFarClip);
+	vr::HmdMatrix44_t mat = m_vrInfo.m_pHMD->GetProjectionMatrix(nEye, m_fNearClip, m_fFarClip);
 
 	return Matrix4(
 		mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0],
@@ -1054,10 +1054,10 @@ Matrix4 Application::GetHMDMatrixProjectionEye(vr::Hmd_Eye nEye)
 //-----------------------------------------------------------------------------
 Matrix4 Application::GetHMDMatrixPoseEye(vr::Hmd_Eye nEye)
 {
-	if (!m_pHMD)
+	if (!m_vrInfo.m_pHMD)
 		return Matrix4();
 
-	vr::HmdMatrix34_t matEyeRight = m_pHMD->GetEyeToHeadTransform(nEye);
+	vr::HmdMatrix34_t matEyeRight = m_vrInfo.m_pHMD->GetEyeToHeadTransform(nEye);
 	Matrix4 matrixObj(
 		matEyeRight.m[0][0], matEyeRight.m[1][0], matEyeRight.m[2][0], 0.0,
 		matEyeRight.m[0][1], matEyeRight.m[1][1], matEyeRight.m[2][1], 0.0,
@@ -1078,11 +1078,11 @@ Matrix4 Application::GetCurrentViewProjectionMatrix(vr::Hmd_Eye nEye)
 	Matrix4 matMVP;
 	if (nEye == vr::Eye_Left)
 	{
-		matMVP = m_mat4ProjectionLeft * m_mat4eyePosLeft * m_mat4HMDPose;
+		matMVP = m_vrInfo.m_mat4ProjectionLeft * m_vrInfo.m_mat4eyePosLeft * m_vrInfo.m_mat4HMDPose;
 	}
 	else if (nEye == vr::Eye_Right)
 	{
-		matMVP = m_mat4ProjectionRight * m_mat4eyePosRight * m_mat4HMDPose;
+		matMVP = m_vrInfo.m_mat4ProjectionRight * m_vrInfo.m_mat4eyePosRight * m_vrInfo.m_mat4HMDPose;
 	}
 
 	return matMVP;
@@ -1094,39 +1094,39 @@ Matrix4 Application::GetCurrentViewProjectionMatrix(vr::Hmd_Eye nEye)
 //-----------------------------------------------------------------------------
 void Application::UpdateHMDMatrixPose()
 {
-	if (!m_pHMD)
+	if (!m_vrInfo.m_pHMD)
 		return;
 
-	vr::VRCompositor()->WaitGetPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+	vr::VRCompositor()->WaitGetPoses(m_vrInfo.m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
 
-	m_iValidPoseCount = 0;
-	m_strPoseClasses = "";
+	m_vrInfo.m_iValidPoseCount = 0;
+	m_vrInfo.m_strPoseClasses = "";
 	for (int nDevice = 0; nDevice < vr::k_unMaxTrackedDeviceCount; ++nDevice)
 	{
-		if (m_rTrackedDevicePose[nDevice].bPoseIsValid)
+		if (m_vrInfo.m_rTrackedDevicePose[nDevice].bPoseIsValid)
 		{
-			m_iValidPoseCount++;
-			m_rmat4DevicePose[nDevice] = ConvertSteamVRMatrixToMatrix4(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking);
-			if (m_rDevClassChar[nDevice] == 0)
+			m_vrInfo.m_iValidPoseCount++;
+			m_vrInfo.m_rmat4DevicePose[nDevice] = ConvertSteamVRMatrixToMatrix4(m_vrInfo.m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking);
+			if (m_vrInfo.m_rDevClassChar[nDevice] == 0)
 			{
-				switch (m_pHMD->GetTrackedDeviceClass(nDevice))
+				switch (m_vrInfo.m_pHMD->GetTrackedDeviceClass(nDevice))
 				{
-				case vr::TrackedDeviceClass_Controller:        m_rDevClassChar[nDevice] = 'C'; break;
-				case vr::TrackedDeviceClass_HMD:               m_rDevClassChar[nDevice] = 'H'; break;
-				case vr::TrackedDeviceClass_Invalid:           m_rDevClassChar[nDevice] = 'I'; break;
-				case vr::TrackedDeviceClass_GenericTracker:    m_rDevClassChar[nDevice] = 'G'; break;
-				case vr::TrackedDeviceClass_TrackingReference: m_rDevClassChar[nDevice] = 'T'; break;
-				default:                                       m_rDevClassChar[nDevice] = '?'; break;
+				case vr::TrackedDeviceClass_Controller:        m_vrInfo.m_rDevClassChar[nDevice] = 'C'; break;
+				case vr::TrackedDeviceClass_HMD:               m_vrInfo.m_rDevClassChar[nDevice] = 'H'; break;
+				case vr::TrackedDeviceClass_Invalid:           m_vrInfo.m_rDevClassChar[nDevice] = 'I'; break;
+				case vr::TrackedDeviceClass_GenericTracker:    m_vrInfo.m_rDevClassChar[nDevice] = 'G'; break;
+				case vr::TrackedDeviceClass_TrackingReference: m_vrInfo.m_rDevClassChar[nDevice] = 'T'; break;
+				default:                                       m_vrInfo.m_rDevClassChar[nDevice] = '?'; break;
 				}
 			}
-			m_strPoseClasses += m_rDevClassChar[nDevice];
+			m_vrInfo.m_strPoseClasses += m_vrInfo.m_rDevClassChar[nDevice];
 		}
 	}
 
-	if (m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
+	if (m_vrInfo.m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
 	{
-		m_mat4HMDPose = m_rmat4DevicePose[vr::k_unTrackedDeviceIndex_Hmd];
-		m_mat4HMDPose.invert();
+		m_vrInfo.m_mat4HMDPose = m_vrInfo.m_rmat4DevicePose[vr::k_unTrackedDeviceIndex_Hmd];
+		m_vrInfo.m_mat4HMDPose.invert();
 	}
 }
 
