@@ -10,12 +10,8 @@ public:
 		m_shaderDesc(CompileGLShader(shaderName, vertexShaderContent, fragmentShaderContent)),
 		m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix")) 
 	{
-
-		vr::VRInput()->GetActionHandle("/actions/demo/out/Haptic_Left", &vrInfo.m_rHand[VRInfo::EHand::Left].m_actionHaptic);
-		vr::VRInput()->GetInputSourceHandle("/user/hand/left", &vrInfo.m_rHand[VRInfo::EHand::Left].m_source);
-
-		vr::VRInput()->GetActionHandle("/actions/demo/out/Haptic_Right", &vrInfo.m_rHand[VRInfo::EHand::Right].m_actionHaptic);
-		vr::VRInput()->GetInputSourceHandle("/user/hand/right", &vrInfo.m_rHand[VRInfo::EHand::Right].m_source);
+		vr::VRInput()->GetActionHandle("/actions/pingpong/out/Haptic_Left", &vrInfo.m_rHand[VRInfo::Left].m_actionHaptic);
+		vr::VRInput()->GetActionHandle("/actions/pingpong/out/Haptic_Right", &vrInfo.m_rHand[VRInfo::Right].m_actionHaptic);
 	}
 
 	// Inherited via VRCapable

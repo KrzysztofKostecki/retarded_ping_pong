@@ -241,6 +241,10 @@ bool Application::BInit()
 	vr::VRInput()->SetActionManifestPath(Path_MakeAbsolute("../pingpong_actions.json", Path_StripFilename(Path_GetExecutablePath())).c_str());
 
 	vr::VRInput()->GetActionSetHandle("/actions/rpingpong", &m_genericActionSet);
+	vr::VRInput()->GetInputSourceHandle("/user/hand/left", &m_vrInfo.m_rHand[VRInfo::Left].m_source);
+	vr::VRInput()->GetActionHandle("/actions/rpingpong/in/Hand_Left", &m_vrInfo.m_rHand[VRInfo::Left].m_actionPose);
+	vr::VRInput()->GetInputSourceHandle("/user/hand/right", &m_vrInfo.m_rHand[VRInfo::Right].m_source);
+	vr::VRInput()->GetActionHandle("/actions/rpingpong/in/Hand_Right", &m_vrInfo.m_rHand[VRInfo::Right].m_actionPose);
 
 	return true;
 }
