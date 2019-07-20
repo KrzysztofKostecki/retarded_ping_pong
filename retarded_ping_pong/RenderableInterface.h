@@ -30,19 +30,7 @@ struct FramebufferDesc
 	GLuint m_nResolveFramebufferId;
 };
 
-struct RenderInfo {
-	GLint m_nSceneMatrixLocation;
-	GLint m_nControllerMatrixLocation;
-	GLint m_nRenderModelMatrixLocation;
-
-	uint32_t m_nRenderWidth;
-	uint32_t m_nRenderHeight;
-
-};
-
 struct RenderableInterface {
-	RenderInfo& m_renderInfo;
-	RenderableInterface(RenderInfo& renderInfo) : m_renderInfo{ renderInfo } {}
 	static GLuint CompileGLShader(const char* pchShaderName, const char* pchVertexShader, const char* pchFragmentShader);
 	static GLint GetShaderParamLocation(const GLuint shaderDesc, const std::string& paramName);
 	virtual void RenderScene(vr::Hmd_Eye nEye) = 0;
@@ -92,6 +80,13 @@ struct VRInfo {
 
 	FramebufferDesc leftEyeDesc;
 	FramebufferDesc rightEyeDesc;
+
+	GLint m_nSceneMatrixLocation;
+	GLint m_nControllerMatrixLocation;
+	GLint m_nRenderModelMatrixLocation;
+
+	uint32_t m_nRenderWidth;
+	uint32_t m_nRenderHeight;
 };
 
 class VRCapable : public RenderableInterface {
@@ -100,6 +95,5 @@ protected:
 
 public:
 
-	VRCapable(RenderInfo& renderInfo, VRInfo& vr) : RenderableInterface{ renderInfo
-	}, m_vrInfo{ vr }{}
+	VRCapable(VRInfo& vr) :  m_vrInfo{ vr }{}
 };

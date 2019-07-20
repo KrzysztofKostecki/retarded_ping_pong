@@ -7,8 +7,6 @@
 //-----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-	VRInfo vrInfo;
-	RenderInfo renderInfo;
 	Application app;
 
 	if (!app.BInit())

@@ -53,7 +53,6 @@ private:
 	bool m_bVblank;
 	bool m_bGlFinishHack;
 
-	RenderInfo m_renderInfo;
 	VRInfo m_vrInfo;
 
 	MainStage* m_stage;

@@ -4,7 +4,7 @@ class Ball :
 	public VRCapable
 {
 public:
-	Ball(RenderInfo& renderInfo, VRInfo& vrInfo) : VRCapable{ renderInfo, vrInfo } {}
+	Ball(VRInfo& vrInfo) : VRCapable{ vrInfo } {}
 
 	// Inherited via VRCapable
 	void RenderScene(vr::Hmd_Eye nEye) override;

@@ -621,7 +621,7 @@ void Application::SetupScene()
 	if (m_stage != nullptr) {
 		delete m_stage;
 	}
-	m_stage = new MainStage(m_renderInfo, m_vrInfo);
+	m_stage = new MainStage(m_vrInfo);
 }
 
 
@@ -687,10 +687,10 @@ bool Application::SetupStereoRenderTargets()
 	if (!m_vrInfo.m_pHMD)
 		return false;
 
-	m_vrInfo.m_pHMD->GetRecommendedRenderTargetSize(&m_renderInfo.m_nRenderWidth, &m_renderInfo.m_nRenderHeight);
+	m_vrInfo.m_pHMD->GetRecommendedRenderTargetSize(&m_vrInfo.m_nRenderWidth, &m_vrInfo.m_nRenderHeight);
 
-	CreateFrameBuffer(m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight, m_vrInfo.leftEyeDesc);
-	CreateFrameBuffer(m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight, m_vrInfo.rightEyeDesc);
+	CreateFrameBuffer(m_vrInfo.m_nRenderWidth, m_vrInfo.m_nRenderHeight, m_vrInfo.leftEyeDesc);
+	CreateFrameBuffer(m_vrInfo.m_nRenderWidth, m_vrInfo.m_nRenderHeight, m_vrInfo.rightEyeDesc);
 
 	return true;
 }
@@ -758,7 +758,7 @@ void Application::RenderStereoTargets()
 
 	// Left Eye
 	glBindFramebuffer(GL_FRAMEBUFFER, m_vrInfo.leftEyeDesc.m_nRenderFramebufferId);
-	glViewport(0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight);
+	glViewport(0, 0, m_vrInfo.m_nRenderWidth, m_vrInfo.m_nRenderHeight);
 	m_stage->RenderScene(vr::Eye_Left);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -767,7 +767,7 @@ void Application::RenderStereoTargets()
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_vrInfo.leftEyeDesc.m_nRenderFramebufferId);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_vrInfo.leftEyeDesc.m_nResolveFramebufferId);
 
-	glBlitFramebuffer(0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight, 0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight,
+	glBlitFramebuffer(0, 0, m_vrInfo.m_nRenderWidth, m_vrInfo.m_nRenderHeight, 0, 0, m_vrInfo.m_nRenderWidth, m_vrInfo.m_nRenderHeight,
 		GL_COLOR_BUFFER_BIT,
 		GL_LINEAR);
 
@@ -778,7 +778,7 @@ void Application::RenderStereoTargets()
 
 	// Right Eye
 	glBindFramebuffer(GL_FRAMEBUFFER, m_vrInfo.rightEyeDesc.m_nRenderFramebufferId);
-	glViewport(0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight);
+	glViewport(0, 0, m_vrInfo.m_nRenderWidth, m_vrInfo.m_nRenderHeight);
 	m_stage->RenderScene(vr::Eye_Right);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -787,7 +787,7 @@ void Application::RenderStereoTargets()
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_vrInfo.rightEyeDesc.m_nRenderFramebufferId);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_vrInfo.rightEyeDesc.m_nResolveFramebufferId);
 
-	glBlitFramebuffer(0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight, 0, 0, m_renderInfo.m_nRenderWidth, m_renderInfo.m_nRenderHeight,
+	glBlitFramebuffer(0, 0, m_vrInfo.m_nRenderWidth, m_vrInfo.m_nRenderHeight, 0, 0, m_vrInfo.m_nRenderWidth, m_vrInfo.m_nRenderHeight,
 		GL_COLOR_BUFFER_BIT,
 		GL_LINEAR);
 

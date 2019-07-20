@@ -1,12 +1,13 @@
 #pragma once 
 
 #include "RenderableInterface.h"
+#include "Ball.h"
 
 class MainStage : public VRCapable {
 
 public:
-	MainStage(RenderInfo& renderInfo, VRInfo& vrInfo) : 
-		VRCapable{ renderInfo, vrInfo }, 
+	MainStage(VRInfo& vrInfo) : 
+		VRCapable{ vrInfo }, 
 		m_shaderDesc(CompileGLShader(shaderName, vertexShaderContent, fragmentShaderContent)), 
 		m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix"))  
 	{
@@ -15,6 +16,8 @@ public:
 	// Inherited via VRCapable
 	void RenderScene(vr::Hmd_Eye nEye) override;
 
+private:
+	Ball* m_ball = nullptr;
 
 private:
 	GLuint m_shaderDesc;

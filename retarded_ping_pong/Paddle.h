@@ -5,8 +5,8 @@ class Paddle :
 {
 
 public:
-	Paddle(RenderInfo& renderInfo, VRInfo& vrInfo) :
-		VRCapable{ renderInfo, vrInfo },
+	Paddle(VRInfo& vrInfo) :
+		VRCapable{ vrInfo },
 		m_shaderDesc(CompileGLShader(shaderName, vertexShaderContent, fragmentShaderContent)),
 		m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix")) 
 	{
