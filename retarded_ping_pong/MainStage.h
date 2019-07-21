@@ -1,25 +1,38 @@
 #pragma once 
+#include <vector>
+#include <bullet/btBulletCollisionCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
 
 #include "RenderableInterface.h"
 #include "Ball.h"
+#include "Paddle.h"
+#include "Floor.h"
 
-class MainStage : public VRCapable {
+class MainStage : public VRCapable{
 
 public:
-	MainStage(VRInfo& vrInfo) : 
-		VRCapable{ vrInfo }, 
-		m_shaderDesc(CompileGLShader(shaderName, vertexShaderContent, fragmentShaderContent)), 
-		m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix")),
-		m_ball(new Ball(m_vrInfo))
-	{
-	}
+	MainStage(VRInfo& vrInfo);
 
 	// Inherited via VRCapable
 	void RenderScene(vr::Hmd_Eye nEye) override;
 	void HandleInput() override;
 
 private:
-	Ball* m_ball = nullptr;
+	bool MainStage::checkCollisions();
+
+private:
+	std::unique_ptr<Ball> m_ball;
+	std::unique_ptr<Paddle> m_paddle1;
+	std::unique_ptr<Paddle> m_paddle2;
+	std::vector<std::unique_ptr<Ball>> m_balls;
+	std::unique_ptr<Floor> m_floor;
+
+private:
+	std::unique_ptr<btDefaultCollisionConfiguration> m_collisionConfiguration;
+	std::unique_ptr<btCollisionDispatcher> m_dispatcher;
+	std::unique_ptr<btBroadphaseInterface> m_overlappingPairCache;
+	std::unique_ptr<btSequentialImpulseConstraintSolver> m_solver;
+	std::unique_ptr<btDiscreteDynamicsWorld> m_dynamics_world;
 
 private:
 	GLuint m_shaderDesc;

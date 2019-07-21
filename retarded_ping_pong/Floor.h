@@ -5,36 +5,34 @@
 
 #include "RenderableInterface.h"
 
+struct  FloorRigitBodyConf {
+	static constexpr btScalar floorSize = .2f;
 
-
-
-struct  BallRigitBodyConf {
-	static constexpr btScalar ballSize = .2f;
 	btRigidBody::btRigidBodyConstructionInfo* info;
-	BallRigitBodyConf() {
-		btCollisionShape* groundShape = new btBoxShape(btVector3(ballSize, ballSize, ballSize));
 
+	FloorRigitBodyConf() {
+		btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0.0);
 		btTransform groundTransform;
 		groundTransform.setIdentity();
-		groundTransform.setOrigin(btVector3(0, (rand() % 1000) / 50.0 , 0));
+		groundTransform.setOrigin(btVector3(0, 0, 0));
 
-		btScalar mass(0.2);
+		btScalar mass(0.0);
 		btVector3 localInertia(0, 0, 0);
-		groundShape->calculateLocalInertia(mass, localInertia);
+
 		//using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
 		btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
 		info = new btRigidBody::btRigidBodyConstructionInfo(mass, myMotionState, groundShape, localInertia);
 	}
 };
 
-class Ball :
+class Floor :
 	public VRCapable,
-	public BallRigitBodyConf,
+	public FloorRigitBodyConf,
 	public btRigidBody
 {
 public:
-	Ball(VRInfo& vrInfo);
-	~Ball();
+	Floor(VRInfo& vrInfo);
+	~Floor();
 
 	// Inherited via VRCapable
 	void RenderScene(vr::Hmd_Eye nEye) override;
@@ -72,7 +70,7 @@ private:
 		"out vec4 outputColor;\n"
 		"void main()\n"
 		"{\n"
-		"   outputColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+		"   outputColor = vec4(0.0, 1.0, 0.0, 1.0);\n"
 		"}\n";
 };
 

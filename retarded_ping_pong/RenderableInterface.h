@@ -45,10 +45,16 @@ struct VRInfo {
 	{
 		vr::VRInputValueHandle_t m_source = vr::k_ulInvalidInputValueHandle;
 		vr::VRActionHandle_t m_actionPose = vr::k_ulInvalidActionHandle;
-		vr::VRActionHandle_t m_actionHaptic = vr::k_ulInvalidActionHandle;
 		Matrix4 m_rmat4Pose;
-		std::string m_sRenderModelName;
 		bool m_bShowController;
+		bool isControllerConnected() {
+			vr::InputOriginInfo_t originInfo;
+			vr::VRInput()->GetOriginTrackedDeviceInfo(m_source, &originInfo, sizeof(originInfo));
+			if (originInfo.trackedDeviceIndex == vr::k_unTrackedDeviceIndexInvalid) {
+				return false;
+			}
+			return true;
+		}
 	};
 
 	enum EHand

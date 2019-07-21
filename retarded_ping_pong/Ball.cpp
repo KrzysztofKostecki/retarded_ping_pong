@@ -2,6 +2,9 @@
 
 Ball::Ball(VRInfo& vrInfo) : 
 	VRCapable{ vrInfo },
+	BallRigitBodyConf(),
+	btRigidBody(*info),
+	m_name("Ball"),
 	m_shaderDesc(CompileGLShader(shaderName, vertexShaderContent, fragmentShaderContent)),
 	m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix")) 
 {
@@ -59,6 +62,12 @@ Ball::Ball(VRInfo& vrInfo) :
 	glBindVertexArray( 0 );
 	glDisableVertexAttribArray(0);
 
+	setRestitution(0.9);
+	//setContactStiffnessAndDamping(1.0, 1.0);
+	//setDamping(.5f, .5f);
+	setUserIndex(-1);
+	setUserPointer((void*)(m_name.c_str()));
+
 }
 
 Ball::~Ball() {
@@ -67,8 +76,18 @@ Ball::~Ball() {
 
 void Ball::RenderScene(vr::Hmd_Eye nEye)
 {
-	m_position.identity().scale(0.1f);
+	btTransform mat;
+	getMotionState()->getWorldTransform(mat);
+	float raw[16];
+	mat.getOpenGLMatrix(raw);
+	m_position.set(raw);
+	m_position.scale(0.1f);
+	m_position.translate(Vector3(ballSize / 2.0, ballSize / 2.0, ballSize / 2.0));
 	m_position = m_vrInfo.GetCurrentViewProjectionMatrix(nEye) * m_position;
+
+
+	std::cout << "Ball" << std::endl;
+	std::cout << m_position << std::endl;
 
 	glUseProgram(m_shaderDesc);
 	glUniformMatrix4fv(m_matrixShaderLocation, 1, GL_FALSE, m_position.get());

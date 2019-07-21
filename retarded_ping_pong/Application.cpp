@@ -220,7 +220,7 @@ bool Application::BInit()
 
 
 	m_fNearClip = 0.1f;
-	m_fFarClip = 30.0f;
+	m_fFarClip = 60.0f;
 
 
 	// 		m_MillisecondsTimer.start(1, this);
@@ -404,16 +404,7 @@ bool Application::HandleInput()
 	vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
 
 
-	// Example triggering haptic vibration
-	//vr::VRInputValueHandle_t ulHapticDevice;
-	//if (ulHapticDevice == m_vrInfo.m_rHand[VRInfo::Left].m_source)
-	//{
-	//	vr::VRInput()->TriggerHapticVibrationAction(m_vrInfo.m_rHand[VRInfo::Left].m_actionHaptic, 0, 1, 4.f, 1.0f, vr::k_ulInvalidInputValueHandle);
-	//}
-	//if (ulHapticDevice == m_vrInfo.m_rHand[VRInfo::Right].m_source)
-	//{
-	//	vr::VRInput()->TriggerHapticVibrationAction(m_vrInfo.m_rHand[VRInfo::Right].m_actionHaptic, 0, 1, 4.f, 1.0f, vr::k_ulInvalidInputValueHandle);
-	//}
+
 
 	m_vrInfo.m_rHand[VRInfo::Left].m_bShowController = true;
 	m_vrInfo.m_rHand[VRInfo::Right].m_bShowController = true;
@@ -429,17 +420,6 @@ bool Application::HandleInput()
 		else
 		{
 			m_vrInfo.m_rHand[eHand].m_rmat4Pose = ConvertSteamVRMatrixToMatrix4(poseData.pose.mDeviceToAbsoluteTracking);
-
-			vr::InputOriginInfo_t originInfo;
-			if (vr::VRInput()->GetOriginTrackedDeviceInfo(poseData.activeOrigin, &originInfo, sizeof(originInfo)) == vr::VRInputError_None
-				&& originInfo.trackedDeviceIndex != vr::k_unTrackedDeviceIndexInvalid)
-			{
-				std::string sRenderModelName = GetTrackedDeviceString(originInfo.trackedDeviceIndex, vr::Prop_RenderModelName_String);
-				if (sRenderModelName != m_vrInfo.m_rHand[eHand].m_sRenderModelName)
-				{
-					m_vrInfo.m_rHand[eHand].m_sRenderModelName = sRenderModelName;
-				}
-			}
 		}
 	}
 
@@ -553,41 +533,6 @@ void Application::RenderFrame()
 //-----------------------------------------------------------------------------
 bool Application::CreateAllShaders()
 {
-
-	//m_unRenderModelProgramID = CompileGLShader(
-	//	"render model",
-
-	//	// vertex shader
-	//	"#version 410\n"
-	//	"uniform mat4 matrix;\n"
-	//	"layout(location = 0) in vec4 position;\n"
-	//	"layout(location = 1) in vec3 v3NormalIn;\n"
-	//	"layout(location = 2) in vec2 v2TexCoordsIn;\n"
-	//	"out vec2 v2TexCoord;\n"
-	//	"void main()\n"
-	//	"{\n"
-	//	"	v2TexCoord = v2TexCoordsIn;\n"
-	//	"	gl_Position = matrix * vec4(position.xyz, 1);\n"
-	//	"}\n",
-
-	//	//fragment shader
-	//	"#version 410 core\n"
-	//	"uniform sampler2D diffuse;\n"
-	//	"in vec2 v2TexCoord;\n"
-	//	"out vec4 outputColor;\n"
-	//	"void main()\n"
-	//	"{\n"
-	//	"   outputColor = texture( diffuse, v2TexCoord);\n"
-	//	"}\n"
-
-	//);
-	//m_nRenderModelMatrixLocation = glGetUniformLocation(m_unRenderModelProgramID, "matrix");
-	//if (m_nRenderModelMatrixLocation == -1)
-	//{
-	//	dprintf("Unable to find matrix uniform in render model shader\n");
-	//	return false;
-	//}
-
 	m_unCompanionWindowProgramID = RenderableInterface::CompileGLShader(
 		"CompanionWindow",
 
@@ -800,55 +745,6 @@ void Application::RenderStereoTargets()
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
-
-//
-////-----------------------------------------------------------------------------
-//// Purpose: Renders a scene with respect to nEye.
-////-----------------------------------------------------------------------------
-//void Application::RenderScene(vr::Hmd_Eye nEye)
-//{
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//	glEnable(GL_DEPTH_TEST);
-//
-//	if (m_bShowCubes)
-//	{
-//		glUseProgram(m_unSceneProgramID);
-//		glUniformMatrix4fv(m_nSceneMatrixLocation, 1, GL_FALSE, GetCurrentViewProjectionMatrix(nEye).get());
-//		glBindVertexArray(m_unSceneVAO);
-//		glBindTexture(GL_TEXTURE_2D, m_iTexture);
-//		glDrawArrays(GL_TRIANGLES, 0, m_uiVertcount);
-//		glBindVertexArray(0);
-//	}
-//
-//	bool bIsInputAvailable = m_pHMD->IsInputAvailable();
-//
-//	if (bIsInputAvailable)
-//	{
-//		// draw the controller axis lines
-//		glUseProgram(m_unControllerTransformProgramID);
-//		glUniformMatrix4fv(m_nControllerMatrixLocation, 1, GL_FALSE, GetCurrentViewProjectionMatrix(nEye).get());
-//		glBindVertexArray(m_unControllerVAO);
-//		glDrawArrays(GL_LINES, 0, m_uiControllerVertcount);
-//		glBindVertexArray(0);
-//	}
-//
-//	// ----- Render Model rendering -----
-//	glUseProgram(m_unRenderModelProgramID);
-//
-//	for (EHand eHand = Left; eHand <= Right; ((int&)eHand)++)
-//	{
-//		if (!m_rHand[eHand].m_bShowController || !m_rHand[eHand].m_pRenderModel)
-//			continue;
-//
-//		const Matrix4& matDeviceToTracking = m_rHand[eHand].m_rmat4Pose;
-//		Matrix4 matMVP = GetCurrentViewProjectionMatrix(nEye) * matDeviceToTracking;
-//		glUniformMatrix4fv(m_nRenderModelMatrixLocation, 1, GL_FALSE, matMVP.get());
-//
-//		m_rHand[eHand].m_pRenderModel->Draw();
-//	}
-//
-//	glUseProgram(0);
-//}
 
 
 //-----------------------------------------------------------------------------
