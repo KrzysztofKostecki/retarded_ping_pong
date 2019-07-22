@@ -62,7 +62,7 @@ Floor::Floor(VRInfo& vrInfo) :
 	glBindVertexArray( 0 );
 	glDisableVertexAttribArray(0);
 
-	setRestitution(1);
+	setRestitution(0.1);
 	setUserPointer((void*)(m_name.c_str()));
 }
 

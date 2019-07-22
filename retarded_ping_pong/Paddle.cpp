@@ -73,7 +73,8 @@ Paddle::Paddle(VRInfo& vrInfo, VRInfo::EHand hand) :
 
 
 	setRestitution(0.5);
-	setCollisionFlags(btRigidBody::CollisionFlags::CF_KINEMATIC_OBJECT);
+	setCollisionFlags(getCollisionFlags() | btRigidBody::CollisionFlags::CF_KINEMATIC_OBJECT);
+	setActivationState(DISABLE_DEACTIVATION);
 	setUserPointer((void*)(m_name.c_str()));
 }
 
@@ -82,22 +83,12 @@ void Paddle::RenderScene(vr::Hmd_Eye nEye)
 {
 	glUseProgram(m_shaderDesc);
 	Matrix4 matDeviceToTracking = m_vrInfo.m_rHand[m_hand].m_rmat4Pose;
-	std::cout << "PADDLE" << std::endl;
-	//vr::TrackedDevicePose_t pose;
-	//m_vrInfo.m_pHMD->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseOrigin::TrackingUniverseStanding, 0, &pose, 0);
-	//pose.mDeviceToAbsoluteTracking;
-	std::cout << "vr Matrix" << std::endl;
-	std::cout << matDeviceToTracking << std::endl;
 	btTransform mat;
 	auto matDevicecopy = matDeviceToTracking;
-	matDevicecopy = matDevicecopy.translate(Vector3(-paddleSize / 2, -paddleSize / 2, -paddleSize / 2));
-	//mat.setFromOpenGLMatrix(matDevicecopy.get());
 	mat.setFromOpenGLMatrix(matDevicecopy.get());
 	getMotionState()->setWorldTransform(mat);
-	std::cout << "bt Matrix" << std::endl;
 	auto& origin = mat.getOrigin();
-	std::cout << origin.getX() << " " << origin.getY() << " " << origin.getZ() << std::endl;
-
+	
 	Matrix4 matMVP;
 	matMVP.scale(0.1f);
 	matMVP = m_vrInfo.GetCurrentViewProjectionMatrix(nEye) * matDeviceToTracking * matMVP;

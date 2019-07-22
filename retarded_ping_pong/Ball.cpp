@@ -1,12 +1,12 @@
 #include "Ball.h"
 
-Ball::Ball(VRInfo& vrInfo) : 
+Ball::Ball(VRInfo& vrInfo) :
 	VRCapable{ vrInfo },
 	BallRigitBodyConf(),
 	btRigidBody(*info),
 	m_name("Ball"),
 	m_shaderDesc(CompileGLShader(shaderName, vertexShaderContent, fragmentShaderContent)),
-	m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix")) 
+	m_matrixShaderLocation(GetShaderParamLocation(m_shaderDesc, "matrix"))
 {
 
 	GLfloat vertexData[] = {
@@ -49,17 +49,17 @@ Ball::Ball(VRInfo& vrInfo) :
 	};
 
 	m_vertexCount = sizeof(vertexData) / sizeof(float);
-	glGenVertexArrays( 1, &m_vao);
+	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
 
-	glGenBuffers( 1, &m_vbo);
-	glBindBuffer( GL_ARRAY_BUFFER, m_vbo);
-	glBufferData( GL_ARRAY_BUFFER, m_vertexCount*sizeof(float), vertexData, GL_STATIC_DRAW);
+	glGenBuffers(1, &m_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, m_vertexCount * sizeof(float), vertexData, GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray( 0 );
-	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3 , nullptr);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
 
-	glBindVertexArray( 0 );
+	glBindVertexArray(0);
 	glDisableVertexAttribArray(0);
 
 	setRestitution(0.9);
@@ -76,19 +76,13 @@ Ball::~Ball() {
 
 void Ball::RenderScene(vr::Hmd_Eye nEye)
 {
-	btTransform mat;
-	getMotionState()->getWorldTransform(mat);
+	btTransform& mat = getWorldTransform();
+	auto& origin = mat.getOrigin();
 	float raw[16];
 	mat.getOpenGLMatrix(raw);
 	m_position.set(raw);
-	m_position.scale(0.1f);
-	m_position.translate(Vector3(ballSize / 2.0, ballSize / 2.0, ballSize / 2.0));
+	m_position.scale(0.2f);
 	m_position = m_vrInfo.GetCurrentViewProjectionMatrix(nEye) * m_position;
-
-
-	std::cout << "Ball" << std::endl;
-	std::cout << m_position << std::endl;
-
 	glUseProgram(m_shaderDesc);
 	glUniformMatrix4fv(m_matrixShaderLocation, 1, GL_FALSE, m_position.get());
 	glBindVertexArray(m_vao);

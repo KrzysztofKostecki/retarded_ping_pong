@@ -9,16 +9,16 @@
 
 
 struct  BallRigitBodyConf {
-	static constexpr btScalar ballSize = .2f;
+	static constexpr btScalar ballSize = 0.2f;
 	btRigidBody::btRigidBodyConstructionInfo* info;
 	BallRigitBodyConf() {
 		btCollisionShape* groundShape = new btBoxShape(btVector3(ballSize, ballSize, ballSize));
 
 		btTransform groundTransform;
 		groundTransform.setIdentity();
-		groundTransform.setOrigin(btVector3(0, (rand() % 1000) / 50.0 , 0));
+		groundTransform.setOrigin(btVector3(0, 15, 0));
 
-		btScalar mass(0.2);
+		btScalar mass(1);
 		btVector3 localInertia(0, 0, 0);
 		groundShape->calculateLocalInertia(mass, localInertia);
 		//using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
@@ -72,7 +72,7 @@ private:
 		"out vec4 outputColor;\n"
 		"void main()\n"
 		"{\n"
-		"   outputColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+		"   outputColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
 		"}\n";
 };
 

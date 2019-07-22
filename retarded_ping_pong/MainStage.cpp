@@ -18,17 +18,13 @@ MainStage::MainStage(VRInfo& vrInfo) :
 	m_dynamics_world->setGravity(btVector3(0, -10, 0));
 
 	//m_dynamics_world->addRigidBody(m_ball.get());
-	m_dynamics_world->addRigidBody(m_paddle1.get());
+	//m_dynamics_world->addRigidBody(m_paddle1.get());
 	//m_dynamics_world->addRigidBody(m_paddle2.get());
 	m_dynamics_world->addRigidBody(m_floor.get());
-	
+
 	for (std::size_t i = 0; i < 2; i++) {
 		m_balls.push_back(std::make_unique<Ball>(m_vrInfo));
-		btTransform mat;
-		m_balls.back()->getMotionState()->getWorldTransform(mat);
-		//mat.setOrigin(btVector3 (15 + (2 * i), 15 + (2*i), 15 + (2 * i)));
-		m_balls.back()->getMotionState()->setWorldTransform(mat);
-
+		m_balls.back()->getWorldTransform().setOrigin(btVector3(0, 2 + (2 * i), 0));
 		m_dynamics_world->addRigidBody(m_balls.back().get());
 	}
 }
@@ -36,33 +32,7 @@ MainStage::MainStage(VRInfo& vrInfo) :
 
 void MainStage::RenderScene(vr::Hmd_Eye nEye)
 {
-	m_dynamics_world->updateAabbs();
-	m_dynamics_world->stepSimulation(1.f / 60.f, 100);
-	bool collisions = checkCollisions();
-
-	//print positions of all objects
-	for (int j = m_dynamics_world->getNumCollisionObjects() - 1; j >= 0; j--)
-	{
-		btCollisionObject* obj = m_dynamics_world->getCollisionObjectArray()[j];
-		btRigidBody* body = btRigidBody::upcast(obj);
-		std::cout << "Object: " << (const char*)body->getUserPointer() << ", position:";
-		body->activate(true);
-		btTransform trans;
-		if (body && body->getMotionState())
-		{
-			body->getMotionState()->getWorldTransform(trans);
-		}
-		else
-		{
-			trans = obj->getWorldTransform();
-		}
-		std::cout << trans.getOrigin().getX() << " " << trans.getOrigin().getY() << " " << trans.getOrigin().getZ() << std::endl;
-		btVector3 min, max;
-		body->getAabb(min, max);
-		std::cout << "Min " << min.getX() << " " << min.getY() << " " << min.getZ() << std::endl;
-		std::cout << "Max " << max.getX() << " " << max.getY() << " " << max.getZ() << std::endl;
-	}
-
+	//bool collisions = checkCollisions();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -70,7 +40,7 @@ void MainStage::RenderScene(vr::Hmd_Eye nEye)
 
 	//m_ball->RenderScene(nEye);
 	//m_paddle2->RenderScene(nEye);
-	m_paddle1->RenderScene(nEye);
+	//m_paddle1->RenderScene(nEye);
 	m_floor->RenderScene(nEye);
 	for (auto& ball : m_balls) {
 		ball->RenderScene(nEye);
@@ -81,6 +51,18 @@ void MainStage::RenderScene(vr::Hmd_Eye nEye)
 
 void MainStage::HandleInput()
 {
+	m_dynamics_world->stepSimulation(1.f / 60.f, 10);
+	int numCollisionObjects = m_dynamics_world->getNumCollisionObjects();
+	for (int i = 0; i < numCollisionObjects; i++)
+	{
+		//B3_PROFILE("writeSingleInstanceTransformToCPU");
+		btCollisionObject* colObj = m_dynamics_world->getCollisionObjectArray()[i];
+		colObj->activate(true);
+		btRigidBody* body = btRigidBody::upcast(colObj);
+		std::cout << "Object: " << (const char*)body->getUserPointer() << ", position:";
+		btVector3 pos = colObj->getWorldTransform().getOrigin();
+		std::cout << pos.getX() << " " << pos.getY() << " " << pos.getZ() << std::endl;
+	}
 }
 
 bool MainStage::checkCollisions()

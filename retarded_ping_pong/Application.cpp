@@ -17,6 +17,10 @@
 #include <stdio.h>
 #include <string>
 #include <cstdlib>
+#include <iostream>
+#include <cstdio>
+#include <chrono>
+#include <thread>
 
 #include "shared/lodepng.h"
 #include "shared/Matrices.h"
@@ -422,7 +426,7 @@ bool Application::HandleInput()
 			m_vrInfo.m_rHand[eHand].m_rmat4Pose = ConvertSteamVRMatrixToMatrix4(poseData.pose.mDeviceToAbsoluteTracking);
 		}
 	}
-
+	m_stage->HandleInput();
 	return bRet;
 }
 
@@ -431,16 +435,33 @@ bool Application::HandleInput()
 //-----------------------------------------------------------------------------
 void Application::RunMainLoop()
 {
+	static std::chrono::system_clock::time_point a = std::chrono::system_clock::now();
+	static std::chrono::system_clock::time_point b = std::chrono::system_clock::now();
 	bool bQuit = false;
 
 	SDL_StartTextInput();
 	SDL_ShowCursor(SDL_DISABLE);
-
+	static float minTimeWait = 200;
 	while (!bQuit)
 	{
+		// Maintain designated frequency of 60 Hz (800 ms per frame)
+		a = std::chrono::system_clock::now();
+		std::chrono::duration<double, std::milli> work_time = a - b;
+
+		if (work_time.count() < minTimeWait)
+		{
+			std::chrono::duration<double, std::milli> delta_ms(minTimeWait - work_time.count());
+			auto delta_ms_duration = std::chrono::duration_cast<std::chrono::milliseconds>(delta_ms);
+			std::this_thread::sleep_for(std::chrono::milliseconds(delta_ms_duration.count()));
+		}
+
+		b = std::chrono::system_clock::now();
+		std::chrono::duration<double, std::milli> sleep_time = b - a;
+
 		bQuit = HandleInput();
 
 		RenderFrame();
+		printf("Time: %f \n", (work_time + sleep_time).count());
 	}
 
 	SDL_StopTextInput();
