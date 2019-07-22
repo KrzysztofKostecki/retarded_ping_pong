@@ -441,7 +441,8 @@ void Application::RunMainLoop()
 
 	SDL_StartTextInput();
 	SDL_ShowCursor(SDL_DISABLE);
-	static float minTimeWait = 200;
+	static float fps = 60;
+	static float minTimeWait = 1000/fps;
 	while (!bQuit)
 	{
 		// Maintain designated frequency of 60 Hz (800 ms per frame)

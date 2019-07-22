@@ -9,7 +9,7 @@
 
 
 struct  BallRigitBodyConf {
-	static constexpr btScalar ballSize = 0.2f;
+	static constexpr btScalar ballSize = 1.f;
 	btRigidBody::btRigidBodyConstructionInfo* info;
 	BallRigitBodyConf() {
 		btCollisionShape* groundShape = new btBoxShape(btVector3(ballSize, ballSize, ballSize));
@@ -18,7 +18,7 @@ struct  BallRigitBodyConf {
 		groundTransform.setIdentity();
 		groundTransform.setOrigin(btVector3(0, 15, 0));
 
-		btScalar mass(1);
+		btScalar mass(0.2);
 		btVector3 localInertia(0, 0, 0);
 		groundShape->calculateLocalInertia(mass, localInertia);
 		//using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects

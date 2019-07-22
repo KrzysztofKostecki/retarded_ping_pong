@@ -18,13 +18,13 @@ MainStage::MainStage(VRInfo& vrInfo) :
 	m_dynamics_world->setGravity(btVector3(0, -10, 0));
 
 	//m_dynamics_world->addRigidBody(m_ball.get());
-	//m_dynamics_world->addRigidBody(m_paddle1.get());
-	//m_dynamics_world->addRigidBody(m_paddle2.get());
+	m_dynamics_world->addRigidBody(m_paddle1.get());
+	m_dynamics_world->addRigidBody(m_paddle2.get());
 	m_dynamics_world->addRigidBody(m_floor.get());
 
-	for (std::size_t i = 0; i < 2; i++) {
+	for (std::size_t i = 0; i < 5; i++) {
 		m_balls.push_back(std::make_unique<Ball>(m_vrInfo));
-		m_balls.back()->getWorldTransform().setOrigin(btVector3(0, 2 + (2 * i), 0));
+		m_balls.back()->getWorldTransform().setOrigin(btVector3(2 + ( i/2), 2 + (2 * i), 0));
 		m_dynamics_world->addRigidBody(m_balls.back().get());
 	}
 }
@@ -39,8 +39,8 @@ void MainStage::RenderScene(vr::Hmd_Eye nEye)
 	glUseProgram(m_shaderDesc);
 
 	//m_ball->RenderScene(nEye);
-	//m_paddle2->RenderScene(nEye);
-	//m_paddle1->RenderScene(nEye);
+	m_paddle2->RenderScene(nEye);
+	m_paddle1->RenderScene(nEye);
 	m_floor->RenderScene(nEye);
 	for (auto& ball : m_balls) {
 		ball->RenderScene(nEye);

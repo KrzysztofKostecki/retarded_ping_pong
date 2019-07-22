@@ -6,7 +6,7 @@
 #include "RenderableInterface.h"
 
 struct PaddleRigitBodyConf {
-	static constexpr btScalar paddleSize = .2f;
+	static constexpr btScalar paddleSize = 1.f;
 	btRigidBody::btRigidBodyConstructionInfo* info;
 
 	PaddleRigitBodyConf() {

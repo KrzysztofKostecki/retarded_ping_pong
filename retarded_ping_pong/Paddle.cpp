@@ -90,7 +90,7 @@ void Paddle::RenderScene(vr::Hmd_Eye nEye)
 	auto& origin = mat.getOrigin();
 	
 	Matrix4 matMVP;
-	matMVP.scale(0.1f);
+	matMVP.scale(0.2f);
 	matMVP = m_vrInfo.GetCurrentViewProjectionMatrix(nEye) * matDeviceToTracking * matMVP;
 
 	glUniformMatrix4fv(m_matrixShaderLocation, 1, GL_FALSE, matMVP.get());
